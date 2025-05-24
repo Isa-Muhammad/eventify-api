@@ -10,15 +10,14 @@ const events = JSON.parse(
   fs.readFileSync(`${__dirname}/data/events.json`, "utf-8")
 );
 
-// console.log(events);
-
-app.get("/api/v1/events", (req, res) => {
+// HANDLER FUNCTIONS
+const getAllEvents = (req, res) => {
   res
     .status(200)
     .json({ status: "success", results: events.length, data: { events } });
-});
+};
 
-app.get("/api/v1/events/:id", (req, res) => {
+const getEvent = (req, res) => {
   const { id } = req.params;
   const event = events.find((item) => item.id === Number(id));
 
@@ -33,11 +32,9 @@ app.get("/api/v1/events/:id", (req, res) => {
       event,
     },
   });
-});
+};
 
-app.post("/api/v1/events", (req, res) => {
-  console.log(req.body);
-
+const createEvent = (req, res) => {
   const newId = events[events.length - 1].id + 1;
   const newEvent = Object.assign({ id: newId }, req.body);
 
@@ -51,9 +48,9 @@ app.post("/api/v1/events", (req, res) => {
       },
     });
   });
-});
+};
 
-app.patch("/api/v1/events/:id", (req, res) => {
+const updateEvent = (req, res) => {
   const { id } = req.params;
 
   if (Number(id) > events.length) {
@@ -64,9 +61,9 @@ app.patch("/api/v1/events/:id", (req, res) => {
     status: "success",
     data: { event: "<Updated event here...>" },
   });
-});
+};
 
-app.delete("/api/v1/events/:id", (req, res) => {
+const deleteEvent = (req, res) => {
   const { id } = req.params;
 
   if (Number(id) > events.length) {
@@ -74,7 +71,21 @@ app.delete("/api/v1/events/:id", (req, res) => {
   }
 
   res.status(204).json({ status: "success", data: null });
-});
+};
+
+// app.get("/api/v1/events", getAllEvents);
+// app.get("/api/v1/events/:id", getEvent);
+// app.post("/api/v1/events", createEvent);
+// app.patch("/api/v1/events/:id", updateEvent);
+// app.delete("/api/v1/events/:id", deleteEvent);
+
+app.route("/api/v1/events").get(getAllEvents).post(createEvent);
+
+app
+  .route("/api/v1/events/:id")
+  .get(getEvent)
+  .patch(updateEvent)
+  .delete(deleteEvent);
 
 const port = 3000;
 app.listen(port, "127.0.0.1", () => {
