@@ -3,8 +3,14 @@ const fs = require("fs");
 
 const app = express();
 
-// Middleware
+// MIDDLEWARE
 app.use(express.json());
+
+app.use((req, res, next) => {
+  req.requestedTime = new Date().toISOString();
+
+  next();
+});
 
 const events = JSON.parse(
   fs.readFileSync(`${__dirname}/data/events.json`, "utf-8")
@@ -12,9 +18,13 @@ const events = JSON.parse(
 
 // HANDLER FUNCTIONS
 const getAllEvents = (req, res) => {
-  res
-    .status(200)
-    .json({ status: "success", results: events.length, data: { events } });
+  console.log("REQUESTED TIME:", req.requestedTime);
+  res.status(200).json({
+    status: "success",
+    requestedAt: req.requestedTime,
+    results: events.length,
+    data: { events },
+  });
 };
 
 const getEvent = (req, res) => {
