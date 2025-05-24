@@ -53,6 +53,19 @@ app.post("/api/v1/events", (req, res) => {
   });
 });
 
+app.patch("/api/v1/events/:id", (req, res) => {
+  const { id } = req.params;
+
+  if (Number(id) > events.length) {
+    return res.status(404).json({ status: "fail", message: "Invalid ID" });
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: { event: "<Updated event here...>" },
+  });
+});
+
 const port = 3000;
 app.listen(port, "127.0.0.1", () => {
   console.log(`App running on port ${port}...`);
